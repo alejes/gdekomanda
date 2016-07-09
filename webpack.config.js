@@ -3,7 +3,7 @@ const webpack = require('webpack');
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
-module.exports = {
+const config = {
   devtool: NODE_ENV === 'production' ? null : 'source-map',
   entry: [
     './src/main'
@@ -14,11 +14,6 @@ module.exports = {
     publicPath: '/html/assets/'
   },
   plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-          warnings: false
-      }
-    }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(NODE_ENV)
     })
@@ -31,3 +26,13 @@ module.exports = {
     }]
   }
 };
+
+if (NODE_ENV === 'production') {
+  config.plugins.push(new webpack.optimize.UglifyJsPlugin({
+    compress: {
+        warnings: false
+    }
+  }));
+}
+
+module.exports = config;
