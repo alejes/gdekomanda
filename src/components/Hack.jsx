@@ -6,7 +6,7 @@ export default () => (
   <div className="container">
     <section className="jumbotron text-center">
       <h1 className="page-header">GeekDay</h1>
-      <p><big>
+      <p>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit.
         Quidem voluptatem eaque, ab sint assumenda distinctio saepe
         alias perspiciatis repudiandae, velit, reprehenderit recusandae
@@ -14,7 +14,7 @@ export default () => (
         Ut aperiam officiis magni quis, cupiditate, delectus dicta soluta.
         Numquam quibusdam maxime repudiandae quis, autem voluptatibus assumenda vel ea.
         Similique itaque saepe sapiente consequuntur!
-      </big></p>
+      </p>
 
       <hr />
       <div className="row">
@@ -23,7 +23,7 @@ export default () => (
         </big></p>
       </div>
       <div className="row">
-        <div className="col-xs-offset-2 col-xs-8 col-md-offset-4 col-md-4">
+        <div className="col-xs-offset-1 col-xs-10 col-md-offset-4 col-md-4">
           <Link className="btn btn-primary btn-lg btn-block" to="/geekday/create">Создать команду</Link>
         </div>
       </div>
@@ -35,7 +35,7 @@ export default () => (
         </big></p>
       </div>
       <div className="row">
-        <div className="col-xs-offset-2 col-xs-8 col-md-offset-4 col-md-4">
+        <div className="col-xs-offset-1 col-xs-10 col-md-offset-4 col-md-4">
           <Link className="btn btn-primary btn-lg btn-block" to="/geekday/find">Найти команду</Link>
         </div>
       </div>
