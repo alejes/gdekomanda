@@ -1,0 +1,25 @@
+{
+  "name": "gdekomanda",
+  "version": "0.1.0",
+  "description": "geekday project",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack -w",
+    "deploy": "webpack"
+  },
+  "keywords": [],
+  "author": "gdekomanda",
+  "license": "ISC",
+  "dependencies": {
+    "babel-core": "^6.10.4",
+    "babel-loader": "^6.2.4",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.11.1",
+    "babel-preset-stage-0": "^6.5.0",
+    "react": "^15.2.1",
+    "react-dom": "^15.2.1",
+    "react-router": "^2.5.2",
+    "webpack": "^1.13.1"
+  }
+}
