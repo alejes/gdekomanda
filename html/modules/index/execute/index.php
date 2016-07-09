@@ -14,10 +14,7 @@ class index{
 		$hackatons_list = fetch_mysql($hackatons);
 		
 		
-        Template::display("header", array());
-        Template::assign(array('hackaton_list' => $hackatons_list));
-        Template::display("hackaton_list");
-        Template::display("footer");
+        Template::display("main", array());
 
     }
 

@@ -1,0 +1,1 @@
+<?php require ("/var/www/html/index.html"); ?>

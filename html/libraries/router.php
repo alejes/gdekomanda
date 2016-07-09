@@ -90,9 +90,26 @@ class Router {
                     self::$page = '';
                     self::$module = self::$segment1;
                 }
-                else self::$controller_exists = FALSE;
+                else {
+					self::$controller_path = 'modules/index/execute/index.php';
+                    self::$controller_name = 'index';
+                    self::$action = '';
+                    self::$page = '';
+                    self::$module = 'index';
+					self::$controller_exists = TRUE;
+				}
             }
-            else throw new Exception('00404');
+            else {
+				if(file_exists(ROOT .'modules/index/execute/index.php')) {
+                    self::$controller_path = 'modules/index/execute/index.php';
+                    self::$controller_name = 'index';
+                    self::$action = '';
+                    self::$page = '';
+                    self::$module = 'index';
+					self::$controller_exists = TRUE;
+                }
+                else self::$controller_exists = FALSE;
+			}
         }
         if(self::$controller_exists) {
                 define('ROUTE_CONTROLLER_PATH', self::$controller_path);

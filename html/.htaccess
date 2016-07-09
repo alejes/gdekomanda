@@ -11,7 +11,9 @@ ServerSignature Off
 </Files>
 
 
-ErrorDocument 404 /404
+DirectoryIndex index.php
+
+ErrorDocument 404 /
 
 
 RewriteEngine On
