@@ -23,7 +23,7 @@ export default () => (
         </big></p>
       </div>
       <div className="row">
-        <div className="col-xs-offset-4 col-xs-4">
+        <div className="col-xs-offset-2 col-xs-8 col-md-offset-4 col-md-4">
           <Link className="btn btn-primary btn-lg btn-block" to="/geekday/create">Создать команду</Link>
         </div>
       </div>
@@ -35,7 +35,7 @@ export default () => (
         </big></p>
       </div>
       <div className="row">
-        <div className="col-xs-offset-4 col-xs-4">
+        <div className="col-xs-offset-2 col-xs-8 col-md-offset-4 col-md-4">
           <Link className="btn btn-primary btn-lg btn-block" to="/geekday/find">Найти команду</Link>
         </div>
       </div>
