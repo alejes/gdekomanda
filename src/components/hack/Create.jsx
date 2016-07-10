@@ -111,9 +111,7 @@ export default class CreateFind extends React.Component {
             browserHistory.push(`/geekday/team/${data.answer}`);
           });
       })
-      .catch(error => {
-        console.log('ERROR');
-      });
+      .catch(error => console.log('ERROR'));
   }
 
   onChangeCodersCount (event) {
