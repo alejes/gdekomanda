@@ -107,7 +107,18 @@ class api{
 					if (mysql_num_rows(mysql_query("SELECT * FROM `users` WHERE (`email`='".$email."')")) > 0){
 						self::apiFailedExit(json_encode(array("answer"=>"FAIL_EMAIL_ALREADY_USED")));
 					}
-					mysql_query("INSERT INTO `users` SET `name` = '".$name."', `email`='".$email."', `password` = '".$password."'");
+					
+					$skills = array();
+					foreach ($array['skills'] AS $value){
+						$skills[] = intval($value);
+					}
+					
+					
+					$skills_String = ';' . implode($skills, ';') . ';';
+					
+					
+				
+					mysql_query("INSERT INTO `users` SET `name` = '".$name."', `email`='".$email."', `password` = '".$password."', `skills` = '".$skills_String."'");
 					setcookie ("auth_email", $email);
 					setcookie ("auth_key", self::getKey($password));
 					die(json_encode(array("answer"=>"OK")));
