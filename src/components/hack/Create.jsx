@@ -59,7 +59,7 @@ export default class CreateFind extends React.Component {
               <input type="text" ref="title" className="form-control" placeholder="Название проекта" />
             </div>
             <div className="form-group col-xs-12 col-md-offset-3 col-md-6">
-              <input type="text" ref="email" className="form-control" placeholder="Адрес электронной почты" />
+              <input type="email" ref="email" className="form-control" placeholder="Адрес электронной почты" />
             </div>
             <CodersSelector
               count={ this.state.count }
