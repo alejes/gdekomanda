@@ -79,7 +79,14 @@ class Router {
                     self::$page = '';
                     self::$module = self::$segment1;
                 }
-                else self::$controller_exists = FALSE;
+                else {
+					self::$controller_path = 'modules/index/execute/index.php';
+                    self::$controller_name = 'index';
+                    self::$action = '';
+                    self::$page = '';
+                    self::$module = 'index';
+					self::$controller_exists = TRUE;
+				}
             }
             # Если указан только 1 сегмент
             elseif(!empty(self::$segment1)) {

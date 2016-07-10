@@ -13,7 +13,12 @@ class api{
 	}
 	
 	private static function apiFailedExit($text){
+		header('Access-Control-Allow-Origin: *');
+		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
+		header('Access-Control-Request-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
 		header('Status: 400 Bad Request', false, 400);
+		//header('Status: 405 Method Not Allowed', false, 405);
 		die($text);
 	}
 	
@@ -46,8 +51,9 @@ class api{
 	
 	public function action_event(){
 		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
-		header('Access-Control-Allow-Headers: Content-Type');
+		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
+		header('Access-Control-Request-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
 		$data = file_get_contents("php://input");
 		$array = json_decode($data, true);
 		
@@ -75,8 +81,9 @@ class api{
 	
 	public function action_skills(){
 		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
-		header('Access-Control-Allow-Headers: Content-Type');
+		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
+		header('Access-Control-Request-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
 		$data = file_get_contents("php://input");
 		$array = json_decode($data, true);
 		
@@ -87,15 +94,31 @@ class api{
 	}
 	
 	public function action_profile(){
+		
+		
+		//die(json_encode(array("email"=> "hgfghjk@gfhjru", "name" => "Imya Illya", "method"=>"POST", "password"=>"12334", "skills"=>array("1","2","3")), true));
+		//{"email":"hgfghjk@gfhjru","method":"POST","password":"12334","skills":["1","2","3"]}
+		//{"email":"hgfghjk@gfhjru",name:"Imya Illya", "method":"PUT","password":"12334","skills":["1","2","3"]}
+		
+		
+		//{"email":"hgfghjk@gfhj.ru",name:"Imya Illya", "method":"PUT","password":"12334","skills":["1","2","3"]}
 		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
-		header('Access-Control-Allow-Headers: Content-Type');
+		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
+		header('Access-Control-Request-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
+		header('Access-Control-Allow-Credentionals: true');
 		$data = file_get_contents("php://input");
+		//echo "123";
+		//die($data);
 		$array = json_decode($data, true);
+		
+		//echo var_dump($array);
+		//echo var_dump($data);
 		
 		
 		$email = trim(full_escape($array['email']));
 		$password = full_escape($array['password']);
+		
 		
 		switch($array['method']){
 			case "PUT":
@@ -106,15 +129,15 @@ class api{
 						self::apiFailedExit(json_encode(array("answer"=>"FAIL_EMAIL_ALREADY_USED")));
 					}
 					
+					
+					
 					$skills = array();
 					foreach ($array['skills'] AS $value){
 						if (empty($value))continue;
 						$skills[] = intval($value);
 					}
 					
-					
 					$skills_String = ';' . implode(';', $skills) . ';';
-					
 					
 				
 					mysql_query("INSERT INTO `users` SET `name` = '".$name."', `email`='".$email."', `password` = '".$password."', `skills` = '".$skills_String."'");
@@ -141,8 +164,9 @@ class api{
 	
 	public function action_participant(){
 		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
-		header('Access-Control-Allow-Headers: Content-Type');
+		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
+		header('Access-Control-Request-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
 		$data = file_get_contents("php://input");
 		$array = json_decode($data, true);
 		
@@ -182,8 +206,9 @@ class api{
 		
 		//{"description":"vjvdfa.kebqwcsa rkopr sg ae uwuawerue q35r 27vrid fg uvw ia","email":"fkjsbbjbsk@vsndskj.rirks","hackaton_id":1,"method":"PUT","skills":[1,2,1],"title":"svsdvbmndbvkjsdnkjv"}
 		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
-		header('Access-Control-Allow-Headers: Content-Type');
+		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
+		header('Access-Control-Request-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
 		$data = file_get_contents("php://input");
 		$array = json_decode($data, true);
 		
@@ -245,8 +270,9 @@ class api{
 	
 	public function action_capitanChat(){
 		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
-		header('Access-Control-Allow-Headers: Content-Type');
+		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
+		header('Access-Control-Request-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
 		$data = file_get_contents("php://input");
 		$array = json_decode($data, true);
 		
@@ -288,8 +314,9 @@ class api{
 	}
 	public function action_capitanPost(){
 		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
-		header('Access-Control-Allow-Headers: Content-Type');
+		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
+		header('Access-Control-Request-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
 		$data = file_get_contents("php://input");
 		$array = json_decode($data, true);
 		
@@ -310,7 +337,7 @@ class api{
 		
 		
 		
-		if ($capitan)
+		//if ($capitan)
 				
 		switch($array['method']){
 			case "PUT":
@@ -332,6 +359,24 @@ class api{
 				die(json_encode(array("answer"=>"OK", 'messages'=> fetch_mysql($q))));
 		}
 		
+	}
+	
+	public function action_hackatonFeed(){
+		header('Access-Control-Allow-Origin: *');
+		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
+		header('Access-Control-Request-Headers: Origin, X-Requested-With, Content-Type, Accept, Accept-Language, Content-Language, Authorization, Access-Control-Allow-Headers');
+		$data = file_get_contents("php://input");
+		$array = json_decode($data, true);
+		
+		switch($array['method']){
+			default:
+				$hackaton_id = intval($array['id']);
+				$hackatons = mysql_query("SELECT * FROM `hackaton_feed` WHERE (`hackaton_id` = '".intval($hackaton_id)."') ORDER by `id` DESC");
+				
+			
+				die(json_encode(array("answer"=>"OK", 'messages'=> fetch_mysql($hackatons))));
+		}
 	}
 }
 

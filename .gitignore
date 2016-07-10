@@ -3,6 +3,7 @@ tests
 *.swp
 html/static/content/**
 html/pmam/**
+html/mashine/**
 html/password.php
 /node_modules
 /npm-debug.log

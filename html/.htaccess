@@ -2,7 +2,7 @@ AddDefaultCharset UTF-8
 
 Options -Indexes
 
-ServerSignature Off
+# ServerSignature Off
 
 # Protect hidden files from being viewed
 <Files .*>
@@ -14,9 +14,21 @@ ServerSignature Off
 DirectoryIndex index.php
 
 ErrorDocument 404 /
+ErrorDocument 400 /blank.html
+
+
+
+
+
+
 
 
 RewriteEngine On
+
+RewriteCond %{REQUEST_METHOD} OPTIONS 
+RewriteRule ^(.*)$ blank.html [QSA,L]
+
+
 
 # Allow any files or directories that exist to be displayed directly
 RewriteCond %{REQUEST_FILENAME} !-f
