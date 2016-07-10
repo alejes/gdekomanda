@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import Preloader from '../framework/Preloader.jsx'
 import SkillSelect from './SkillSelect.jsx'
 import API from '../../api.js'
+import { Link } from 'react-router'
 
 export default class HackFind extends React.Component {
   constructor(props) {
@@ -38,7 +39,7 @@ export default class HackFind extends React.Component {
               />
             </div>
             <div className="form-group col-xs-offset-2 col-xs-8 col-md-offset-4 col-md-4">
-              <button type="submit" className="btn btn-primary btn-lg btn-block">Отправить</button>
+              <Link className="btn btn-primary btn-lg btn-block" to="/geekday/user">Отправить</Link>
             </div>
           </form>
         </section>
