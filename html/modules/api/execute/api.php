@@ -111,6 +111,7 @@ class api{
 					
 					$skills = array();
 					foreach ($array['skills'] AS $value){
+						if (empty($value))continue;
 						$skills[] = intval($value);
 					}
 					
@@ -176,7 +177,7 @@ class api{
 	}
 	
 	
-	public function action_capitanChat(){
+	public function action_capitan(){
 		header('Access-Control-Allow-Origin: *');
 		header('Access-Control-Allow-Methods: GET, POST, PUT');
 		header('Access-Control-Allow-Headers: Content-Type');
@@ -195,6 +196,7 @@ class api{
 				
 				$skills = array();
 				foreach ($array['skills'] AS $value){
+					if (empty($value))continue;
 					$skills[] = intval($value);
 				}
 				
@@ -212,7 +214,7 @@ class api{
 		}
 	}
 	
-	public function action_capitan(){
+	public function action_capitanChat(){
 		header('Access-Control-Allow-Origin: *');
 		header('Access-Control-Allow-Methods: GET, POST, PUT');
 		header('Access-Control-Allow-Headers: Content-Type');
