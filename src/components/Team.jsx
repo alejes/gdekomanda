@@ -3,8 +3,15 @@ import ReactDOM from 'react-dom'
 import Preloader from './framework/Preloader.jsx'
 import API from '../api.js'
 
+const ME = {
+  id: 7,
+  name: 'Джон До'
+};
+
 const chatStyle = {
-  minHeight: '400px'
+  height: '400px',
+  overflowY: 'scroll',
+  marginBottom: '30px'
 };
 
 const partStyle = {
@@ -178,10 +185,23 @@ export default class Chat extends React.Component {
 
     let data = {
       teamId: location.pathname.split('/')[3],
-      message: this.refs.msg.value
+      text: this.refs.msg.value,
+      from: ME.name
     };
 
     // @todo integration with api
     console.log(data);
+
+    // очистить ввод
+    this.refs.msg.value = '';
+
+    // а пока добавляем сообщение сюда
+    let messages = this.state.messages;
+    messages.push({
+      id: messages.length + 1,
+      from: data.from,
+      text: data.text
+    });
+    this.setState({ messages });
   }
 }
