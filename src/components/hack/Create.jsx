@@ -84,7 +84,8 @@ export default class CreateFind extends React.Component {
     event.preventDefault();
 
     let data = {
-      hackaton_id: location.pathname.split('/')[1],
+      method: 'PUT',
+      hackaton_id: 1,
       title: this.refs.title.value,
       email: this.refs.email.value,
       description: this.refs.description.value,
@@ -93,6 +94,23 @@ export default class CreateFind extends React.Component {
 
     // @todo Интегрировать с АПИ
     console.log(data);
+
+    fetch(API.capitan, {  
+        method: 'PUT', 
+        headers: {  
+          'Content-type': 'application/json; charset=UTF-8'  
+        },  
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        console.log('SUCCESS');
+        console.log(response);
+        response.text()
+          .then(data => console.log(data));
+      })
+      .catch(error => {
+        console.log('ERROR');
+      });
   }
 
   onChangeCodersCount (event) {
@@ -128,7 +146,7 @@ export default class CreateFind extends React.Component {
       .then((response) => {
         response.json()
           .then((skills) => this.setState({
-            skills,
+            skills: skills.map((data) => Object.assign({}, data, { id: Number(data.id) })),
             isLoading: false
           }));
       });

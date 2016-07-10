@@ -74,7 +74,7 @@ export default class HackFind extends React.Component {
       .then((response) => {
         response.json()
           .then((skills) => this.setState({
-            skills,
+            skills: skills.map((data) => Object.assign({}, data, { id: Number(data.id) })),
             selectedSkill: skills[0],
             isLoading: false
           }));

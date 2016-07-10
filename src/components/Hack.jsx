@@ -39,6 +39,16 @@ export default () => (
           <Link className="btn btn-primary btn-lg btn-block" to="/geekday/find">Найти команду</Link>
         </div>
       </div>
+
+      <div className="row">
+        <div className="col-xs-offset-1 col-xs-10 col-md-offset-4 col-md-4">
+          <Link to="/geekday/team/1">
+            <small className="text-muted">
+              Управлять командой
+            </small>
+          </Link>
+        </div>
+      </div>
     </section>
   </div>
 )
