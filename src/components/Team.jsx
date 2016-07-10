@@ -49,10 +49,41 @@ const Messages = ({ messages }) => {
   }
 }
 
+const Participant = ({ id, name, skill, onClickDelete }) => {
+  if (id) {
+    return <li className="list-group-item">
+      {name}, {skill.title}
+      <button
+        type="button"
+        className="close"
+        data-id={ id }
+        onClick={ onClickDelete }
+      >
+        &times;
+      </button>
+    </li>
+  } else {
+    return <li className="list-group-item text-muted">
+      {skill.title}
+    </li>
+  }
+}
+
+const Participants = ({ participants, onClickDelete }) => {
+  return <ul className="list-group text-left">
+    { participants.map((participant, index) => <Participant
+        key={ index }
+        onClickDelete={ onClickDelete }
+        {...participant}
+      />
+    ) }
+  </ul>
+}
+
 export default class Chat extends React.Component {
   constructor (props) {
     super(props);
-    this.loadMessages();
+    this.loadData();
   }
 
   state = {
@@ -60,12 +91,28 @@ export default class Chat extends React.Component {
     isLoading: true
   }
 
+  loadData () {
+    Promise.all([
+      this.loadMessages(),
+      this.loadParticipants()
+    ]).then(() => this.setState({
+      isLoading: false
+    }))
+  }
+
   loadMessages () {
-    fetch(API.messages)
+    return fetch(API.messages)
       .then(response => response.json())
       .then(messages => this.setState({
-        messages,
-        isLoading: false
+        messages
+      }))
+  }
+
+  loadParticipants () {
+    return fetch(API.participants)
+      .then(response => response.json())
+      .then(participants => this.setState({
+        participants
       }))
   }
 
@@ -93,25 +140,16 @@ export default class Chat extends React.Component {
             </div>
             <div className="col-xs-12 col-md-4" style={ partStyle }>
               <h4>Участники</h4>
-              <ul className="list-group text-left">
-                <li className="list-group-item">
-                  Петр, фронтендер
-                  <button type="button" className="close">&times;</button>
-                </li>
-                <li className="list-group-item">
-                  Василий, бэкендер
-                  <button type="button" className="close">&times;</button>
-                </li>
-                <li className="list-group-item">
-                  Жанна, дизайнер
-                  <button type="button" className="close">&times;</button>
-                </li>
-                <li className="list-group-item text-muted">
-                  мобильный разработчик
-                </li>
-              </ul>
+              <Participants
+                onClickDelete={ this.onClickDeleteParticipant.bind(this) }
+                participants={ this.state.participants }
+              />
               <div style={ bottomStyle }>
-                <button type="button" className="btn btn-primary">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={ this.loadParticipants.bind(this) }
+                >
                   Подобрать
                 </button>
               </div>
@@ -120,6 +158,19 @@ export default class Chat extends React.Component {
         </section>
       </div>
     }
+  }
+
+  onClickDeleteParticipant (event) {
+    let deletedId = Number(event.target.dataset.id);
+    let newParts = this.state.participants.map(part => deletedId === part.id ? ({
+      id: null,
+      name: null,
+      skill: part.skill
+    }) : part);
+
+    this.setState({
+      participants: newParts
+    });
   }
 
   onSubmit (event) {
