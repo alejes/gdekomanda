@@ -19,6 +19,7 @@ class api{
 	
 	
 	private static function checkAuthorisation(){
+		return true;
 		if (!isset($_COOKIE['auth_email']))return false;
 		if (!isset($_COOKIE['auth_key']))return false;
 		
@@ -175,7 +176,7 @@ class api{
 	}
 	
 	
-	public function action_capitan(){
+	public function action_capitanChat(){
 		header('Access-Control-Allow-Origin: *');
 		header('Access-Control-Allow-Methods: GET, POST, PUT');
 		header('Access-Control-Allow-Headers: Content-Type');
@@ -209,6 +210,51 @@ class api{
 			break;
 			default:
 		}
+	}
+	
+	public function action_capitan(){
+		header('Access-Control-Allow-Origin: *');
+		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Headers: Content-Type');
+		$data = file_get_contents("php://input");
+		$array = json_decode($data, true);
+		
+		if (!self::checkAuthorisation()){
+			self::apiFailedExit(json_encode(array("answer"=>"FAIL_NOT_AUTH")));
+		}
+		
+		$idea_id = intval($array['idea_id']);
+				
+		$user = mysql_fetch_array(mysql_query("SELECT * FROM `users` (`email` = '".$email."')"));
+		$q = mysql_query("SELECT * FROM `capitans` WHERE ((`user_id`='".$user['id']."') AND (`id`='".$idea_id."'))");
+		if (mysql_num_rows($q) <= 0){
+			self::apiFailedExit(json_encode(array("answer"=>"FAIL_IDEA_NOT_FOUND")));
+		}
+		$capitan = mysql_fetch_assoc($q);
+				
+		switch($array['method']){
+			case "PUT":
+			
+				$q = mysql_query("SELECT `id` FROM `participant` WHERE ((`hackaton_id` = '".$capitan['hackaton_id']."') AND (`user_id` <> '".$user['id']."')) ORDER by RAND() LIMIT 3");
+				
+				$list = array();
+				while($res = mysql_fetch_assoc($q)){
+					mysql_query("INSERT INTO `capitan_followers` SET `idea_id` = '".$idea_id."', `user_id`='".$res['user_id']."'");
+					$list[] = $res['user_id'];
+				}
+				
+				die(json_encode(array("answer"=>"OK", 'followers'=> $list)));
+				
+			break;
+			default:
+				$q = mysql_query("SELECT `user_id` FROM `capitan_followers` WHERE (`idea_id` = '".$idea_id."')");
+				$list = array();
+				while($res = mysql_fetch_assoc($q)){
+					$list[] = $res['user_id'];
+				}
+				die(json_encode(array("answer"=>"OK", 'followers'=> $list)));
+		}
+		
 	}
 	
 }
