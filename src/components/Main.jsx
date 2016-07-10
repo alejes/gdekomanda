@@ -12,6 +12,6 @@ export default () => (
     <Route path="/geekday" component={Hack}/>
     <Route path="/geekday/create" component={HackCreate}/>
     <Route path="/geekday/find" component={HackFind}/>
-    <Route path="/geekday/team/1" component={Team}/>
+    <Route path="/geekday/team/:teamId" component={Team}/>
   </Router>
 )

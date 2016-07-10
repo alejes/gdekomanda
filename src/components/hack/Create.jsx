@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import Preloader from '../framework/Preloader.jsx'
 import SkillSelect from './SkillSelect.jsx'
 import API from '../../api.js'
+import { browserHistory } from 'react-router'
 
 const CodersSelector = ({ count, skills, onChangeCount, selectedSkills, onChangeSkill }) => {
   if (count > 0) {
@@ -104,9 +105,11 @@ export default class CreateFind extends React.Component {
       })
       .then(response => {
         console.log('SUCCESS');
-        console.log(response);
-        response.text()
-          .then(data => console.log(data));
+        response.json()
+          .then(data => {
+            console.log(data);
+            browserHistory.push(`/geekday/team/${data.answer}`);
+          });
       })
       .catch(error => {
         console.log('ERROR');
