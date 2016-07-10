@@ -19,25 +19,22 @@ class api{
 	
 	
 	private static function checkAuthorisation(){
-		return true;
 		if (!isset($_COOKIE['auth_email']))return false;
 		if (!isset($_COOKIE['auth_key']))return false;
 		
-		echo "isset_ok";
+		//echo "isset_ok";
 		
 		$email = trim(full_escape($_COOKIE['auth_email']));
 		$key = trim(full_escape($_COOKIE['auth_key']));
 		if (empty($email) || empty($key))return false;
 		
-		echo "empty_ok";
+		//echo "empty_ok" . $email;
 		
-		$user = mysql_fetch_array(mysql_query("SELECT * FROM `users` (`email` = '".$email."')"));
-		
-		var_dump($user);
-		
+		$user = mysql_fetch_array(mysql_query("SELECT * FROM `users` WHERE (`email` = '".$email."')"));
+				
 		if (empty($user['password']))return false;
 		
-		echo "empty_user_ok";
+//		echo "empty_user_ok" . self::getKey($user['password']) == $key;
 		
 		return self::getKey($user['password']) == $key;
 	}
@@ -49,7 +46,7 @@ class api{
 	
 	public function action_event(){
 		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
 		header('Access-Control-Allow-Headers: Content-Type');
 		$data = file_get_contents("php://input");
 		$array = json_decode($data, true);
@@ -78,7 +75,7 @@ class api{
 	
 	public function action_skills(){
 		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
 		header('Access-Control-Allow-Headers: Content-Type');
 		$data = file_get_contents("php://input");
 		$array = json_decode($data, true);
@@ -91,7 +88,7 @@ class api{
 	
 	public function action_profile(){
 		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
 		header('Access-Control-Allow-Headers: Content-Type');
 		$data = file_get_contents("php://input");
 		$array = json_decode($data, true);
@@ -116,7 +113,7 @@ class api{
 					}
 					
 					
-					$skills_String = ';' . implode($skills, ';') . ';';
+					$skills_String = ';' . implode(';', $skills) . ';';
 					
 					
 				
@@ -144,7 +141,7 @@ class api{
 	
 	public function action_participant(){
 		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
 		header('Access-Control-Allow-Headers: Content-Type');
 		$data = file_get_contents("php://input");
 		$array = json_decode($data, true);
@@ -178,11 +175,43 @@ class api{
 	
 	
 	public function action_capitan(){
+		//var_dump($_SERVER);
+		
+		//die(json_encode(array("description"=>"vjvdfa.kebqwcsa rkopr sg ae uwuawerue q35r 27vrid fg  uvw ia", "email" =>"fkjsbbjbsk@vsndskj.rirks",
+		//"hackaton_id" =>  1, "method"=> "PUT" , "skills" => array(1, 2, 1), "title" =>"svsdvbmndbvkjsdnkjv"), true));
+		
+		//{"description":"vjvdfa.kebqwcsa rkopr sg ae uwuawerue q35r 27vrid fg uvw ia","email":"fkjsbbjbsk@vsndskj.rirks","hackaton_id":1,"method":"PUT","skills":[1,2,1],"title":"svsdvbmndbvkjsdnkjv"}
 		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
 		header('Access-Control-Allow-Headers: Content-Type');
 		$data = file_get_contents("php://input");
 		$array = json_decode($data, true);
+		
+		if (!isset($_COOKIE['auth_email']) && isset($array['email'])){
+			global $_COOKIE;
+			$email = trim(full_escape($array['email']));
+			if (!email_check($email)){
+				sf::apiFailedExit(json_encode(array("answer"=>"FAIL_WRONG_EMAIL")));
+			}
+			$password = 42;//rand(100000, 9999999);
+			$_COOKIE['auth_email'] = $email;
+			$_COOKIE['auth_key'] = self::getKey($password);
+			setcookie ("auth_email", $email);
+			setcookie ("auth_key", $_COOKIE['auth_key']);
+			
+			$skills = array();
+			foreach ($array['skills'] AS $value){
+				if (empty($value))continue;
+				$skills[] = intval($value);
+			}
+				
+				
+			$skills_String = ';' . implode(';', $skills) . ';';
+				
+			$emailArr = explode('@', $email);
+			//	var_dump($emailArr);
+			mysql_query("INSERT INTO `users` SET `name` = '".$emailArr[0]."', `email`='".$email."', `password` = '".$password."', `skills` = '".$skills_String."'");
+		}
 		
 		if (!self::checkAuthorisation()){
 			self::apiFailedExit(json_encode(array("answer"=>"FAIL_NOT_AUTH")));
@@ -201,11 +230,11 @@ class api{
 				}
 				
 				
-				$skills_String = ';' . implode($skills, ';') . ';';
+				$skills_String = ';' . implode(';', $skills). ';';
 				
-				$user = mysql_fetch_array(mysql_query("SELECT * FROM `users` (`email` = '".$email."')"));
+				$user = mysql_fetch_array(mysql_query("SELECT * FROM `users` WHERE (`email` = '".$email."')"));
 				
-				mysql_insert("INSERT INTO `capitans` SET `hackaton_id`='".$hackaton_id."', `user_id`='".$user['id']."', `title` ='".$title."', `description` ='".$description."', `skills` ='".$skills_String."'");
+				mysql_query("INSERT INTO `capitans` SET `hackaton_id`='".$hackaton_id."', `user_id`='".$user['id']."', `title` ='".$title."', `description` ='".$description."', `skills` ='".$skills_String."'");
 				
 				die(json_encode(array("answer"=>mysql_insert_id())));
 				
@@ -216,7 +245,7 @@ class api{
 	
 	public function action_capitanChat(){
 		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Methods: GET, POST, PUT');
+		header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
 		header('Access-Control-Allow-Headers: Content-Type');
 		$data = file_get_contents("php://input");
 		$array = json_decode($data, true);
@@ -256,9 +285,54 @@ class api{
 				}
 				die(json_encode(array("answer"=>"OK", 'followers'=> $list)));
 		}
+	}
+	public function action_capitanPost(){
+		header('Access-Control-Allow-Origin: *');
+		header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
+		header('Access-Control-Allow-Headers: Content-Type');
+		$data = file_get_contents("php://input");
+		$array = json_decode($data, true);
+		
+		if (!self::checkAuthorisation()){
+			self::apiFailedExit(json_encode(array("answer"=>"FAIL_NOT_AUTH")));
+		}
+		
+		$idea_id = intval($array['idea_id']);
+				
+		$user = mysql_fetch_array(mysql_query("SELECT * FROM `users` (`email` = '".$email."')"));
+		$q = mysql_query("SELECT * FROM `capitans` WHERE ((`user_id`='".$user['id']."') AND (`id`='".$idea_id."'))");
+		if (mysql_num_rows($q) <= 0){
+			self::apiFailedExit(json_encode(array("answer"=>"FAIL_IDEA_NOT_FOUND")));
+		}
+		$q = mysql_query("SELECT `user_id` FROM `capitan_followers` WHERE (`idea_id` = '".$idea_id."')");
+		
+		//check his confa
+		
+		
+		
+		if ($capitan)
+				
+		switch($array['method']){
+			case "PUT":
+				$text = trim(full_escape($array['text']));
+				
+				if (empty($text)){
+					$text = "[empty]";
+				}
+				
+				mysql_query("INSERT INTO `capitan_posts` SET `idea_id`='".$idea_id."', `user_id` = '".$user['id']."', `user_name`='".$user['name']."', `text`='".$text."', `time`='".time()."'");
+				
+				die(json_encode(array("answer"=>"OK", 'id'=> mysql_insert_id())));
+				
+			break;
+			default:
+				$last_id = intval($array['last_id']);
+				$q = mysql_query("SELECT * FROM `capitan_posts` WHERE ((`idea_id` = '".$idea_id."') and (`id` > '".$last_id."'))");
+				
+				die(json_encode(array("answer"=>"OK", 'messages'=> fetch_mysql($q))));
+		}
 		
 	}
-	
 }
 
 ?>
