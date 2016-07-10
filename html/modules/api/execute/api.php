@@ -12,10 +12,33 @@ class api{
 		return md5(self::$cookieSalt . $password . self::$cookieSalt);
 	}
 	
-	private function checkAuthorisation(){
-		if (empty($_COOKIE['auth_email']))return false;
+	private static function apiFailedExit($text){
+		header('Status: 400 Bad Request', false, 400);
+		die($text);
+	}
+	
+	
+	private static function checkAuthorisation(){
+		if (!isset($_COOKIE['auth_email']))return false;
+		if (!isset($_COOKIE['auth_key']))return false;
 		
-		//$user = mysql_fetch_arrs
+		echo "isset_ok";
+		
+		$email = trim(full_escape($_COOKIE['auth_email']));
+		$key = trim(full_escape($_COOKIE['auth_key']));
+		if (empty($email) || empty($key))return false;
+		
+		echo "empty_ok";
+		
+		$user = mysql_fetch_array(mysql_query("SELECT * FROM `users` (`email` = '".$email."')"));
+		
+		var_dump($user);
+		
+		if (empty($user['password']))return false;
+		
+		echo "empty_user_ok";
+		
+		return self::getKey($user['password']) == $key;
 	}
 	
     public function action_default(){
@@ -40,7 +63,7 @@ class api{
 					echo json_encode(array("answer"=>mysql_insert_id()));
 				}
 				else{
-					echo json_encode(array("answer"=>"-1"));
+					self::apiFailedExit(json_encode(array("answer"=>"-1")));
 				}
 			break;
 			default:
@@ -61,7 +84,6 @@ class api{
 		
 		switch($array['method']){
 			default:
-			
 			echo json_encode(fetch_mysql(mysql_query("SELECT * FROM `skills`")));
 		}
 	}
@@ -83,13 +105,15 @@ class api{
 				
 				if (!empty($email) && email_check($email) && !empty($name) && !empty($password)){
 					if (mysql_num_rows(mysql_query("SELECT * FROM `users` WHERE (`email`='".$email."')")) > 0){
-						die(json_encode(array("answer"=>"FAIL_EMAIL_ALREADY_USED")));
+						self::apiFailedExit(json_encode(array("answer"=>"FAIL_EMAIL_ALREADY_USED")));
 					}
 					mysql_query("INSERT INTO `users` SET `name` = '".$name."', `email`='".$email."', `password` = '".$password."'");
+					setcookie ("auth_email", $email);
+					setcookie ("auth_key", self::getKey($password));
 					die(json_encode(array("answer"=>"OK")));
 				}
 				else{
-					die(json_encode(array("answer"=>"FAIL")));
+					self::apiFailedExit(json_encode(array("answer"=>"FAIL")));
 				}
 				break;
 			default:
@@ -100,7 +124,7 @@ class api{
 						die(json_encode(array("answer"=>"OK")));
 				}
 				else{
-					die(json_encode(array("answer"=>"FAIL_USER_NOT_FOUND")));
+					self::apiFailedExit(json_encode(array("answer"=>"FAIL_USER_NOT_FOUND")));
 				}
 		}
 	}
@@ -112,53 +136,67 @@ class api{
 		$data = file_get_contents("php://input");
 		$array = json_decode($data, true);
 		
+		if (!self::checkAuthorisation()){
+			self::apiFailedExit(json_encode(array("answer"=>"FAIL_NOT_AUTH")));
+		}
+		
 		switch($array['method']){
 			case "PUT":
-				$title = trim(full_escape($array['title']));
-				$about = trim(full_escape($array['about']));
-				$date = intval($array['date']);
-				if (!empty($title) && !empty($about) && !empty($date)){
-					mysql_insert("INSERT INTO `hackatons` SET `title` = '".$title."', `about` = '".$about."', `date` = '".$date."'");
-					echo json_encode(array("answer"=>mysql_insert_id()));
+				$id = trim(full_escape($array['id']));
+				if (mysql_num_rows(mysql_query("SELECT * FROM `hackatons` WHERE (`id` = '".$id."')")) <= 0){
+					
+					self::apiFailedExit(json_encode(array("answer"=>"FAIL_HACKATON_NOT_FOUND")));
 				}
-				else{
-					echo json_encode(array("answer"=>"0"));
+				
+				$email = trim(full_escape($_COOKIE['auth_email']));
+		
+				$user = mysql_fetch_array(mysql_query("SELECT * FROM `users` (`email` = '".$email."')"));
+				
+				if (mysql_num_rows(mysql_query("SELECT * FROM `participant` WHERE ((`hackaton_id` = '".$id."') AND (`user_id` = '".$user['id']."'))")) > 0){
+					self::apiFailedExit(json_encode(array("answer"=>"FAIL_USER_ALREADY_REGISTERED")));
 				}
+				
+				mysql_query("INSERT INTO `participant` SET `hackaton_id` = '".$id."', `user_id` = '".$user['id']."'");
+				die(json_encode(array("answer"=>"OK")));
 			break;
 			default:
-				$hackatons = mysql_query("SELECT * FROM `hackatons`");
-				$hackatons_list = fetch_mysql($hackatons);
-				echo json_encode($hackatons_list);
-			break;
 		}
 	}
 	
 	
-	public function action_ideaman(){
+	public function action_capitan(){
 		header('Access-Control-Allow-Origin: *');
 		header('Access-Control-Allow-Methods: GET, POST, PUT');
 		header('Access-Control-Allow-Headers: Content-Type');
 		$data = file_get_contents("php://input");
 		$array = json_decode($data, true);
 		
+		if (!self::checkAuthorisation()){
+			self::apiFailedExit(json_encode(array("answer"=>"FAIL_NOT_AUTH")));
+		}
+		
 		switch($array['method']){
 			case "PUT":
 				$title = trim(full_escape($array['title']));
-				$about = trim(full_escape($array['about']));
-				$date = intval($array['date']);
-				if (!empty($title) && !empty($about) && !empty($date)){
-					mysql_insert("INSERT INTO `hackatons` SET `title` = '".$title."', `about` = '".$about."', `date` = '".$date."'");
-					echo json_encode(array("answer"=>mysql_insert_id()));
+				$hackaton_id = intval($array['hackaton_id']);
+				$description = trim(full_escape($array['description']));
+				
+				$skills = array();
+				foreach ($array['skills'] AS $value){
+					$skills[] = intval($value);
 				}
-				else{
-					echo json_encode(array("answer"=>"0"));
-				}
+				
+				
+				$skills_String = ';' . implode($skills, ';') . ';';
+				
+				$user = mysql_fetch_array(mysql_query("SELECT * FROM `users` (`email` = '".$email."')"));
+				
+				mysql_insert("INSERT INTO `capitans` SET `hackaton_id`='".$hackaton_id."', `user_id`='".$user['id']."', `title` ='".$title."', `description` ='".$description."', `skills` ='".$skills_String."'");
+				
+				die(json_encode(array("answer"=>mysql_insert_id())));
+				
 			break;
 			default:
-				$hackatons = mysql_query("SELECT * FROM `hackatons`");
-				$hackatons_list = fetch_mysql($hackatons);
-				echo json_encode($hackatons_list);
-			break;
 		}
 	}
 	
